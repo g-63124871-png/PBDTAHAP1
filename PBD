@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard PBD - SK SEPRI TENGAH</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    body{font-family:system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; background:#f8f9fa; color:#0f172a;}
+    .wrap{max-width:1200px;margin:0 auto;padding:18px}
+    .header{position:sticky;top:0;z-index:999;background:#fff;display:flex;align-items:center;gap:16px;justify-content:center;padding:12px;border-bottom:1px solid #e6eef3;transition:all .35s ease}
+    .header img{width:90px;height:90px;object-fit:cover;border-radius:50%;transition:all .5s ease;transform:scale(1) rotate(0deg)}
+    .header.shrink img{width:60px;height:60px;transform:scale(.92) rotate(-10deg);opacity:.95}
+    .header .center{text-align:center}
+    .title{font-weight:700;font-size:clamp(18px,2.4vw,26px);margin:0}
+    .subtitle{margin:2px 0 0 0;color:#6b7280;font-size:13px}
+    .controls{display:flex;gap:12px;align-items:center;justify-content:center;margin:14px 0;flex-wrap:wrap}
+    select{padding:8px 10px;border-radius:8px;border:1px solid #d1d5db;background:#fff}
+    .chart-container{width:80%;margin:12px auto}
+    table{width:100%;border-collapse:collapse;margin-top:14px;background:#fff;border-radius:6px;overflow:hidden}
+    th,td{padding:8px 10px;border-bottom:1px solid #eef2f7;text-align:center;white-space:nowrap}
+    th{background:#0ea5a4;color:#fff;position:sticky;top:0}
+    .tblwrap{overflow:auto;max-height:520px;border:1px solid #e6eef3;border-radius:8px;padding:6px;background:#fff}
+    @media(max-width:900px){ .chart-container{width:100%} .controls{flex-direction:column} }
+    .btn{padding:8px 10px;border-radius:8px;border:1px solid #d1d5db;background:#f3f4f6;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header" id="pageHeader">
+      <img src="logo.png " alt="logo.png h" id="logo.png">
+      <div class="center">
+        <div class="title">PENCAPAIAN PBD INDIVIDU TAHAP 1 — 2025</div>
+        <div class="subtitle">SEKOLAH KEBANGSAAN SEPRI TENGAH</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div>
+        <label for="kelasSelect">Pilih Kelas</label><br>
+        <select id="kelasSelect"><option value="ALL">Semua Kelas</option></select>
+      </div>
+
+      <div>
+        <label for="muridSelect">Pilih Murid</label><br>
+        <select id="muridSelect"><option value="">--Pilih Murid--</option></select>
+      </div>
+
+      <div style="align-self:end">
+        <button class="btn" id="btnCsv">Eksport CSV</button>
+      </div>
+    </div>
+
+    <div class="chart-container card">
+      <canvas id="barChart"></canvas>
+    </div>
+
+    <div class="tblwrap">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th>Nama</th><th>Kelas</th>
+            <th>BM</th><th>BI</th><th>MM</th><th>SAINS</th><th>PAI</th><th>PMZ</th><th>PSV</th><th>PJPK</th><th>AR</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+/* ===== DATA MURID (semua baris dari input cikgu) ===== */
+const dataMurid = [
+  {nama:"AIMAN MUHARRAM BIN SULAIMAN",kelas:"1 BESTARI",BM:2,BI:2,MM:2,SAINS:2,PAI:2,PMZ:3,PSV:4,PJPK:3,AR:2},
+  {nama:"AMMAR SYAZWI BIN MOHD AZMI",kelas:"1 BESTARI",BM:3,BI:2,MM:4,SAINS:3,PAI:3,PMZ:3,PSV:3,PJPK:4,AR:3},
+  {nama:"ARMINA NUR WAFIYYAH BINTI MOHD AZIM",kelas:"1 BESTARI",BM:5,BI:3,MM:5,SAINS:5,PAI:4,PMZ:4,PSV:4,PJPK:5,AR:4},
+  {nama:"ATIFAH NA'ILAH BINTI MUHAMMAD AZIZI",kelas:"1 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:4,PMZ:5,PSV:5,PJPK:5,AR:4},
+  {nama:"DHIA AAFIYAH BINTI MD.RASID",kelas:"1 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:4,PMZ:5,PSV:5,PJPK:5,AR:4},
+  {nama:"HARRAZ UWAIS BIN MOHD YUSRI",kelas:"1 BESTARI",BM:3,BI:2,MM:3,SAINS:3,PAI:3,PMZ:3,PSV:4,PJPK:3,AR:3},
+  {nama:"MOHAMMAD HINDRALLAH BIN ABDUL RAHMAN",kelas:"1 BESTARI",BM:4,BI:3,MM:4,SAINS:4,PAI:3,PMZ:4,PSV:4,PJPK:4,AR:3},
+  {nama:"MUHAMMAD ADAM HARITH BIN MADZLAND",kelas:"1 BESTARI",BM:3,BI:2,MM:4,SAINS:3,PAI:3,PMZ:4,PSV:4,PJPK:4,AR:3},
+  {nama:"MUHAMMAD ARIF RAYYAN BIN SHARIF",kelas:"1 BESTARI",BM:2,BI:2,MM:4,SAINS:4,PAI:2,PMZ:4,PSV:3,PJPK:4,AR:2},
+  {nama:"MUHAMMAD AYDEN AQHMAL BIN WAHYU RAHMADY",kelas:"1 BESTARI",BM:5,BI:3,MM:4,SAINS:4,PAI:4,PMZ:4,PSV:3,PJPK:5,AR:4},
+  {nama:"MUHAMMAD DANIAL HADI BIN MAHADIR",kelas:"1 BESTARI",BM:2,BI:2,MM:3,SAINS:3,PAI:2,PMZ:4,PSV:4,PJPK:4,AR:2},
+  {nama:"MUHAMMAD DARWISY BIN MOHD ZAKI",kelas:"1 BESTARI",BM:3,BI:3,MM:5,SAINS:4,PAI:4,PMZ:4,PSV:4,PJPK:4,AR:4},
+  {nama:"MUHAMMAD HARITH NAUFAL BIN YUSMANIZAM",kelas:"1 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:4,PMZ:4,PSV:3,PJPK:4,AR:4},
+  {nama:"MUHAMMAD HAZIQ SAQEEF BIN MOHD HANAFE",kelas:"1 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:4,PMZ:4,PSV:3,PJPK:4,AR:4},
+  {nama:"MUHAMMAD IMAN RAFIQ BIN BADRUL HISHAM",kelas:"1 BESTARI",BM:4,BI:3,MM:4,SAINS:3,PAI:4,PMZ:4,PSV:4,PJPK:4,AR:3},
+  {nama:"MUHAMMAD IZZ ZIKRI BIN MOHAMAD NASHRIQ",kelas:"1 BESTARI",BM:2,BI:2,MM:3,SAINS:3,PAI:2,PMZ:4,PSV:4,PJPK:4,AR:2},
+  {nama:"MUHAMMAD NOR ZIYYAD BIN BAHAROM",kelas:"1 BESTARI",BM:4,BI:3,MM:3,SAINS:3,PAI:2,PMZ:5,PSV:4,PJPK:5,AR:2},
+  {nama:"NOR SYAZZAHIRA BINTI KAMARULZAMAN",kelas:"1 BESTARI",BM:2,BI:2,MM:2,SAINS:2,PAI:2,PMZ:3,PSV:4,PJPK:3,AR:2},
+  {nama:"NUR AMMI RAUDHAH BINTI MOHAMMAD ADZRUL",kelas:"1 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:4,PMZ:5,PSV:3,PJPK:5,AR:4},
+  {nama:"NUR FIREANNA ERWIENNA BINTI MOHD FIRDAUS",kelas:"1 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:3,PMZ:5,PSV:4,PJPK:5,AR:3},
+  {nama:"NUR SHAFIERA QALIESHA BINTI MUHAMMAD SUFFIAN",kelas:"1 BESTARI",BM:3,BI:3,MM:4,SAINS:4,PAI:3,PMZ:4,PSV:4,PJPK:4,AR:3},
+  {nama:"NUR SOFIA ARIANA BINTI ABDULLAH",kelas:"1 BESTARI",BM:2,BI:2,MM:2,SAINS:2,PAI:2,PMZ:3,PSV:4,PJPK:3,AR:2},
+  {nama:"NUR THAQIF ZIHNI BIN NURAZRILAIZAT",kelas:"1 BESTARI",BM:4,BI:3,MM:4,SAINS:4,PAI:4,PMZ:5,PSV:3,PJPK:5,AR:4},
+  {nama:"NURUL AINAA MARISSA BINTI MOHAMAD ANUAR",kelas:"1 BESTARI",BM:5,BI:3,MM:5,SAINS:5,PAI:4,PMZ:5,PSV:4,PJPK:5,AR:4},
+  {nama:"RANIA ZULEYKHA BINTI MOHAMAD FAUZI",kelas:"1 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:4,PMZ:5,PSV:4,PJPK:5,AR:4},
+  {nama:"RIFQI ADAM BIN RIDZWAN",kelas:"1 BESTARI",BM:4,BI:4,MM:4,SAINS:4,PAI:4,PMZ:5,PSV:4,PJPK:5,AR:4},
+  {nama:"SITI NUR INTAN SYAFINAZ BINTI MOHD AZUAN",kelas:"1 BESTARI",BM:3,BI:3,MM:4,SAINS:4,PAI:2,PMZ:4,PSV:3,PJPK:4,AR:2},
+  {nama:"SITI RAYNA NAZIHAH BINTI MUHAMMAD FIRDAUS",kelas:"1 BESTARI",BM:2,BI:2,MM:3,SAINS:3,PAI:2,PMZ:4,PSV:4,PJPK:3,AR:2},
+
+  {nama:"ABDULLAH AL-FAHIM BIN HAFIZUDDIN",kelas:"2 BESTARI",BM:4,BI:4,MM:3,SAINS:5,PAI:4,PMZ:4,PSV:5,PJPK:5,AR:5},
+  {nama:"ALIYA AQILA BINTI MD ALI HANAFIAH",kelas:"2 BESTARI",BM:4,BI:3,MM:3,SAINS:5,PAI:4,PMZ:4,PSV:4,PJPK:5,AR:4},
+  {nama:"ANGGUN KHADEEJA BINTI MOHD KHAIDIER ASHRAFF",kelas:"2 BESTARI",BM:5,BI:4,MM:6,SAINS:5,PAI:4,PMZ:5,PSV:5,PJPK:5,AR:4},
+  {nama:"BUNGA ANGGUN MEDINA BINTI ABDULLAH",kelas:"2 BESTARI",BM:3,BI:3,MM:2,SAINS:4,PAI:2,PMZ:3,PSV:4,PJPK:4,AR:2},
+  {nama:"BUNGA CYNTA LAURA BINTI MOHD FAUZIE",kelas:"2 BESTARI",BM:4,BI:3,MM:3,SAINS:4,PAI:3,PMZ:4,PSV:5,PJPK:5,AR:3},
+  {nama:"JAZA AYRA BINTI JAZMI",kelas:"2 BESTARI",BM:5,BI:4,MM:6,SAINS:5,PAI:5,PMZ:5,PSV:6,PJPK:5,AR:5},
+  {nama:"MASFARISHA MAWARDAH BINTI SAHRULNIZAM",kelas:"2 BESTARI",BM:2,BI:2,MM:2,SAINS:2,PAI:2,PMZ:3,PSV:4,PJPK:5,AR:2},
+  {nama:"MOHAMAD AMMAR ZHAFRAN BIN MOHAMAD ZAHREM",kelas:"2 BESTARI",BM:3,BI:2,MM:2,SAINS:4,PAI:3,PMZ:3,PSV:5,PJPK:4,AR:3},
+  {nama:"MUHAMAD AFIF AMINUDIN BIN MUHAMAD AFFANDI",kelas:"2 BESTARI",BM:3,BI:2,MM:2,SAINS:3,PAI:2,PMZ:3,PSV:5,PJPK:4,AR:2},
+  {nama:"MUHAMMAD ADAM BIN MOHD ZUHAIRI",kelas:"2 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:5,PMZ:4,PSV:5,PJPK:5,AR:5},
+  {nama:"MUHAMMAD ELMAN ZIKRI BIN RAZAMI",kelas:"2 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:3,PMZ:4,PSV:4,PJPK:5,AR:4},
+  {nama:"MUHAMMAD FITRI HAQIM BIN NOORAZLAN SHAH",kelas:"2 BESTARI",BM:5,BI:4,MM:6,SAINS:5,PAI:4,PMZ:4,PSV:5,PJPK:5,AR:5},
+  {nama:"MUHAMMAD RAYYAN BIN ABDUL HADI",kelas:"2 BESTARI",BM:3,BI:2,MM:3,SAINS:4,PAI:3,PMZ:3,PSV:4,PJPK:5,AR:3},
+  {nama:"MUHAMMAD UMAR HARRIS BIN MUHAMAD BASRI",kelas:"2 BESTARI",BM:3,BI:2,MM:3,SAINS:4,PAI:4,PMZ:3,PSV:5,PJPK:4,AR:4},
+  {nama:"NOR WARDA QAISARA BINTI NORSYUKRIHANAPI",kelas:"2 BESTARI",BM:4,BI:4,MM:4,SAINS:5,PAI:4,PMZ:4,PSV:4,PJPK:5,AR:4},
+  {nama:"NUR AAIRA SOFIA BINTI MOHD AZRUL",kelas:"2 BESTARI",BM:3,BI:2,MM:3,SAINS:4,PAI:3,PMZ:3,PSV:5,PJPK:5,AR:3},
+  {nama:"NUR DHIA BATRISYA BINTI MOHD ZAKI",kelas:"2 BESTARI",BM:4,BI:3,MM:3,SAINS:5,PAI:4,PMZ:4,PSV:5,PJPK:5,AR:4},
+  {nama:"NUR HUMAIRA SOFEA BINTI MOHAMAD FAZLI",kelas:"2 BESTARI",BM:3,BI:3,MM:5,SAINS:4,PAI:4,PMZ:3,PSV:5,PJPK:5,AR:4},
+  {nama:"NUR QISTINA ADRIANA BINTI MUSTAFFA KAMAL",kelas:"2 BESTARI",BM:3,BI:2,MM:2,SAINS:3,PAI:3,PMZ:4,PSV:4,PJPK:5,AR:3},
+  {nama:"NUR SHAZYRA ZAQILA BINTI MUHAMAD SHAHROL AZHAM",kelas:"2 BESTARI",BM:4,BI:3,MM:5,SAINS:4,PAI:5,PMZ:5,PSV:5,PJPK:4,AR:5},
+  {nama:"SYAFI BINTI MUHAMMAD SYAZWAN",kelas:"2 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:5,PMZ:5,PSV:4,PJPK:5,AR:5},
+  {nama:"VISHNU A/L MURALI",kelas:"2 BESTARI",BM:3,BI:2,MM:3,SAINS:3,PAI:4,PMZ:3,PSV:4,PJPK:5,AR:2},
+  {nama:"WARDA ZAHIRAH BINTI MOHD HAIDIL",kelas:"2 BESTARI",BM:3,BI:2,MM:2,SAINS:4,PAI:3,PMZ:3,PSV:5,PJPK:5,AR:3},
+
+  {nama:"ADAM MIKHAEL BIN MOHAMAD FAUZI",kelas:"3 BESTARI",BM:5,BI:5,MM:5,SAINS:5,PAI:6,PMZ:5,PSV:4,PJPK:5,AR:6},
+  {nama:"DHIA ADRA QALESYAH BINTI AZMI",kelas:"3 BESTARI",BM:3,BI:3,MM:3,SAINS:3,PAI:3,PMZ:4,PSV:3,PJPK:4,AR:3},
+  {nama:"ELLYASS NURSYIFAA BIN AZMAN",kelas:"3 BESTARI",BM:4,BI:4,MM:4,SAINS:4,PAI:4,PMZ:5,PSV:3,PJPK:3,AR:5},
+  {nama:"FIRAS IZZ ZIKRY BIN KAMARUDDIN",kelas:"3 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:5,PMZ:5,PSV:4,PJPK:5,AR:5},
+  {nama:"HAMANI SYAUQINA BINTI MOHD HANAFE",kelas:"3 BESTARI",BM:5,BI:5,MM:5,SAINS:5,PAI:5,PMZ:5,PSV:5,PJPK:4,AR:5},
+  {nama:"MEDINAH AMANI BINTI MUHAMMAD",kelas:"3 BESTARI",BM:4,BI:3,MM:3,SAINS:3,PAI:4,PMZ:5,PSV:4,PJPK:3,AR:4},
+  {nama:"MIFZAL AFFAN BIN MUSTAZA",kelas:"3 BESTARI",BM:4,BI:4,MM:4,SAINS:4,PAI:4,PMZ:4,PSV:3,PJPK:4,AR:4},
+  {nama:"MUHAMMAD ARRIAN RAFFAN BIN MOHD RIZAL",kelas:"3 BESTARI",BM:3,BI:3,MM:3,SAINS:3,PAI:3,PMZ:4,PSV:3,PJPK:4,AR:3},
+  {nama:"MUHAMMAD ATHAR ARSYAD BIN MOHD SAZALI",kelas:"3 BESTARI",BM:4,BI:3,MM:3,SAINS:3,PAI:3,PMZ:4,PSV:4,PJPK:3,AR:3},
+  {nama:"MUHAMMAD ATHAR IRSYAD BIN MOHD SAZALI",kelas:"3 BESTARI",BM:3,BI:3,MM:3,SAINS:3,PAI:4,PMZ:5,PSV:3,PJPK:3,AR:4},
+  {nama:"MUHAMMAD DANISH ARSYAD BIN MOHD FIRZUAN",kelas:"3 BESTARI",BM:3,BI:3,MM:3,SAINS:3,PAI:3,PMZ:4,PSV:3,PJPK:4,AR:3},
+  {nama:"MUHAMMAD HADIF SYAMIERUL BIN ABDULLAH",kelas:"3 BESTARI",BM:3,BI:3,MM:3,SAINS:3,PAI:3,PMZ:4,PSV:4,PJPK:3,AR:3},
+  {nama:"MUHAMMAD SHAZREEN UQASHA BIN MUHAMMAD SUFFIAN",kelas:"3 BESTARI",BM:2,BI:2,MM:2,SAINS:2,PAI:2,PMZ:4,PSV:3,PJPK:2,AR:2},
+  {nama:"NUR FIRDYNA ERAISYA BINTI MOHD FIRDAUS",kelas:"3 BESTARI",BM:5,BI:4,MM:4,SAINS:4,PAI:5,PMZ:5,PSV:4,PJPK:4,AR:5},
+  {nama:"NUR HANISAH DZAKIRAH BINTI MOHAMMAD GHASSANI",kelas:"3 BESTARI",BM:4,BI:3,MM:4,SAINS:4,PAI:5,PMZ:5,PSV:5,PJPK:5,AR:5},
+  {nama:"NUR RATNA SARI BINTI MOHD RIZAL",kelas:"3 BESTARI",BM:4,BI:3,MM:2,SAINS:3,PAI:3,PMZ:4,PSV:3,PJPK:3,AR:3},
+  {nama:"NURIN BASYIRAH BINTI SHARIF",kelas:"3 BESTARI",BM:3,BI:3,MM:3,SAINS:3,PAI:3,PMZ:5,PSV:3,PJPK:4,AR:3},
+  {nama:"PUTRI NUR IMAN SYAHIRA BINTI ABDUL RAUUF",kelas:"3 BESTARI",BM:5,BI:4,MM:5,SAINS:5,PAI:5,PMZ:5,PSV:3,PJPK:5,AR:5},
+  {nama:"QHAIREEN HUZAIRA BINTI NURZIE HASRUL",kelas:"3 BESTARI",BM:3,BI:3,MM:3,SAINS:3,PAI:3,PMZ:4,PSV:4,PJPK:3,AR:3},
+  {nama:"QHARLEED AR-RYAN BIN ABDULLAH",kelas:"3 BESTARI",BM:3,BI:3,MM:3,SAINS:3,PAI:2,PMZ:5,PSV:3,PJPK:3,AR:2},
+  {nama:"RAISHA NURJANNAH BINTI RIDZWAN",kelas:"3 BESTARI",BM:5,BI:4,MM:4,SAINS:4,PAI:4,PMZ:5,PSV:4,PJPK:4,AR:5}
+];
+/* ================================================== */
+
+const subjects = ["BM","BI","MM","SAINS","PAI","PMZ","PSV","PJPK","AR"];
+const colors = ["#FF6384","#36A2EB","#FFCE56","#4BC0C0","#9966FF","#FF9F40","#8BC34A","#E91E63","#00BCD4"];
+
+const kelasSelect = document.getElementById('kelasSelect');
+const muridSelect = document.getElementById('muridSelect');
+const tbody = document.querySelector('#tbl tbody');
+
+// populate kelas dropdown
+const kelasList = [...new Set(dataMurid.map(d=>d.kelas))].sort();
+kelasList.forEach(k=>{
+  const opt = document.createElement('option'); opt.value = k; opt.text = k; kelasSelect.appendChild(opt);
+});
+
+// render table (filter by kelas)
+function renderTable(kelas='ALL'){
+  tbody.innerHTML = '';
+  const rows = dataMurid.filter(d => kelas === 'ALL' ? true : d.kelas === kelas);
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.nama}</td><td>${r.kelas}</td>` + subjects.map(s=>`<td>${r[s]}</td>`).join('');
+    tbody.appendChild(tr);
+  });
+}
+
+// populate murid dropdown for selected kelas
+function populateMurid(kelas='ALL'){
+  muridSelect.innerHTML = '<option value="">--Pilih Murid--</option>';
+  if(kelas === 'ALL') return;
+  dataMurid.filter(d=>d.kelas===kelas).forEach(d=>{
+    const o = document.createElement('option'); o.value = d.nama; o.text = d.nama; muridSelect.appendChild(o);
+  });
+}
+
+// create bar chart
+const ctx = document.getElementById('barChart');
+const barChart = new Chart(ctx, {
+  type: 'bar',
+  data: { labels: subjects, datasets: [] },
+  options: {
+    responsive:true,
+    scales: { y: { min: 0, max: 6, ticks:{stepSize:1} } },
+    plugins: { legend:{ display:false } }
+  }
+});
+
+function showStudent(name){
+  const student = dataMurid.find(s=>s.nama===name);
+  if(!student) return;
+  const data = subjects.map(s => student[s]);
+  barChart.data.datasets = [{
+    label: student.nama,
+    data,
+    backgroundColor: colors,
+    borderColor: colors,
+    borderWidth: 1
+  }];
+  barChart.update();
+}
+
+// CSV export
+function exportCSV(){
+  const header = ['NAMA','KELAS',...subjects].join(',');
+  const lines = dataMurid.map(d=>[d.nama,d.kelas,...subjects.map(s=>d[s])].map(v=>{
+    const t = String(v).replace(/"/g,'""'); return /,|\n|"/.test(t)?`"${t}"`:t;
+  }).join(','));
+  const csv = [header,...lines].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'PBD_SK_Sepri_Tengah.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// events
+kelasSelect.addEventListener('change', ()=>{
+  const k = kelasSelect.value;
+  renderTable(k);
+  populateMurid(k);
+  barChart.data.datasets = []; barChart.update();
+  muridSelect.value = "";
+});
+
+muridSelect.addEventListener('change', ()=> showStudent(muridSelect.value));
+
+document.getElementById('btnCsv').addEventListener('click', exportCSV);
+
+// init
+renderTable('ALL');
+
+// header shrink on scroll (logo animate)
+const header = document.getElementById('pageHeader');
+window.addEventListener('scroll', ()=> header.classList.toggle('shrink', window.scrollY > 40));
+</script>
+</body>
+</html>
