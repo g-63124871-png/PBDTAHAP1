@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Peruntukan PCG 2025 - SK Sepri Tengah</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #0a2540;
+    color: #fff;
+    margin: 20px;
+    text-align: center;
+  }
+  h1 {
+    margin-bottom: 20px;
+    font-size: 28px;
+    text-transform: uppercase;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    color: #000;
+    margin: 20px 0;
+    font-size: 16px;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+  }
+  td.category {
+    text-align: left;
+    font-weight: bold;
+    font-size: 17px;
+    background: #e0f2fe;
+  }
+  th {
+    background: #38bdf8;
+    color: #fff;
+    text-transform: uppercase;
+  }
+  tr:nth-child(even) td {
+    background: #f9fafb;
+  }
+  input[type="number"], input[type="text"] {
+    width: 90%;
+    padding: 4px;
+    text-align: center;
+  }
+  .totals {
+    background: #fde68a;
+    font-weight: bold;
+  }
+  .btn {
+    padding: 10px 20px;
+    margin: 10px;
+    background: #38bdf8;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 16px;
+  }
+  .btn:hover { background: #0ea5e9; }
+  .signature-section {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 50px;
+    color: #fff;
+  }
+  .signature {
+    text-align: center;
+    font-size: 16px;
+  }
+  .date {
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+<h1>Dashboard Peruntukan PCG 2025<br>Sekolah Kebangsaan Sepri Tengah</h1>
+
+<table id="budgetTable">
+  <thead>
+    <tr>
+      <th>Kategori / Mata Pelajaran</th>
+      <th>Peruntukan 2025 (RM)</th>
+      <th>Item Perbelanjaan</th>
+      <th>Jumlah Perbelanjaan (RM)</th>
+      <th>Baki Terkini (RM)</th>
+      <th>% Baki</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Teras 1 -->
+    <tr><td class="category" colspan="6">PCG Mata Pelajaran - Teras 1</td></tr>
+    <tr>
+      <td>SAINS (40%)</td>
+      <td><input type="number" value="449.58"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>MATEMATIK (30%)</td>
+      <td><input type="number" value="337.17"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>BAHASA INGGERIS (30%)</td>
+      <td><input type="number" value="337.17"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>BAHASA MELAYU</td>
+      <td><input type="number" value="249.76"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>TMK</td>
+      <td><input type="number" value="249.76"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>PEND. AGAMA ISLAM</td>
+      <td><input type="number" value="249.76"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+
+    <!-- Teras 2 -->
+    <tr><td class="category" colspan="6">PCG Mata Pelajaran - Teras 2</td></tr>
+    <tr>
+      <td>REKA BENTUK & TEKNOLOGI (40%)</td>
+      <td><input type="number" value="1057.28"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>PJPK (30%)</td>
+      <td><input type="number" value="792.96"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>PEND. MUZIK (15%)</td>
+      <td><input type="number" value="396.48"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>PEND. KESENIAN (15%)</td>
+      <td><input type="number" value="396.48"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+
+    <!-- Tambahan -->
+    <tr><td class="category" colspan="6">Mata Pelajaran Tambahan</td></tr>
+    <tr>
+      <td>BAHASA ARAB</td>
+      <td><input type="number" value="190.40"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>SEJARAH</td>
+      <td><input type="number" value="560.00"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>KERTAS UJIAN DALAMAN</td>
+      <td><input type="number" value="567.00"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>KEGIATAN PENDIDIKAN ISLAM/MORAL</td>
+      <td><input type="number" value="567.00"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+
+    <!-- Bukan Mata Pelajaran -->
+    <tr><td class="category" colspan="6">PCG Bukan Mata Pelajaran</td></tr>
+    <tr>
+      <td>LPBT</td>
+      <td><input type="number" value="5250.00"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>PSS</td>
+      <td><input type="number" value="2002.00"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>BIMBINGAN & KAUNSELING</td>
+      <td><input type="number" value="952.00"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td>YURAN KHAS SEKOLAH (YKS)</td>
+      <td><input type="number" value="428.40"></td>
+      <td><input type="text"></td>
+      <td><input type="number" value="0"></td>
+      <td></td><td></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr class="totals">
+      <td>Jumlah</td>
+      <td id="totalPeruntukan">0</td>
+      <td>-</td>
+      <td id="totalPerbelanjaan">0</td>
+      <td id="totalBaki">0</td>
+      <td id="totalPercent">0%</td>
+    </tr>
+  </tfoot>
+</table>
+
+<button class="btn" onclick="window.print()">Cetak PDF</button>
+<div class="date" id="printDate"></div>
+
+<div class="signature-section">
+  <div class="signature">
+    <p>__________________________</p>
+    <p><strong>Guru Besar</strong></p>
+  </div>
+  <div class="signature">
+    <p>__________________________</p>
+    <p><strong>Semakan Oleh</strong></p>
+  </div>
+</div>
+
+<script>
+function updateBaki() {
+  let totalPeruntukan = 0, totalPerbelanjaan = 0, totalBaki = 0;
+
+  document.querySelectorAll("#budgetTable tbody tr").forEach(row => {
+    const cells = row.querySelectorAll("td");
+    if (cells.length < 6) return;
+
+    const peruntukan = parseFloat(cells[1].querySelector('input')?.value) || 0;
+    const perbelanjaan = parseFloat(cells[3].querySelector('input')?.value) || 0;
+    const baki = peruntukan - perbelanjaan;
+
+    cells[4].textContent = baki.toFixed(2);
+    const percent = peruntukan > 0 ? (baki / peruntukan) * 100 : 0;
+    cells[5].textContent = percent.toFixed(1) + "%";
+
+    cells[5].style.color = "black";
+    cells[5].style.fontWeight = "bold";
+
+    if (percent < 10) {
+      cells[5].style.color = "green";
+    } else if (percent > 80) {
+      cells[5].style.color = "red";
+    }
+
+    totalPeruntukan += peruntukan;
+    totalPerbelanjaan += perbelanjaan;
+    totalBaki += baki;
+  });
+
+  document.getElementById("totalPeruntukan").textContent = totalPeruntukan.toFixed(2);
+  document.getElementById("totalPerbelanjaan").textContent = totalPerbelanjaan.toFixed(2);
+  document.getElementById("totalBaki").textContent = totalBaki.toFixed(2);
+  document.getElementById("totalPercent").textContent =
+    totalPeruntukan > 0 ? ((totalBaki / totalPeruntukan) * 100).toFixed(1) + "%" : "0%";
+
+  localStorage.setItem("budgetData", document.getElementById("budgetTable").innerHTML);
+}
+
+function loadData() {
+  const saved = localStorage.getItem("budgetData");
+  if (saved) document.getElementById("budgetTable").innerHTML = saved;
+  updateBaki();
+}
+
+function updateDate() {
+  const now = new Date();
+  document.getElementById("printDate").textContent =
+    "Tarikh Cetakan: " + now.toLocaleDateString("ms-MY");
+}
+
+document.addEventListener("input", updateBaki);
+window.onload = () => { loadData(); updateDate(); };
+</script>
+</body>
+</html>
